@@ -29,25 +29,18 @@ add_shortcode("recurrence", "moylgrove_recurrent_events_shortcode");
 
 function moylgrove_recurrence_install()
 {
-    add_action('moylgrove_recurrence_cron_hook', 'moylgrove_recurrence_cron_exec');
-
     if (!wp_next_scheduled('moylgrove_recurrence_cron_hook')) {
-        // Next occurrence of somewhere after 2a.m.
-        $timeToGo = new DateTime('NOW');
-        $hourToGo = (26 - ($timeToGo->format("H") + 0)) % 24;
-        $timeToGo->add(new DateInterval("PT{$hourToGo}H"));
-        $unixTime = $timeToGo->getTimestamp();
-        wp_schedule_event($unixTime, 'daily', 'moylgrove_recurrence_cron_hook');
+        wp_schedule_event(strtotime( 'tomorrow 02:18' ), 'daily', 'moylgrove_recurrence_cron_hook');
     }
 
     moylgrove_recurrence_cron_exec();
 }
 
+add_action("moylgrove_recurrence_cron_hook", "moylgrove_recurrence_cron_exec");
 
 function moylgrove_recurrence_deactivate()
 {
-	$timestamp = wp_next_scheduled('moylgrove_recurrence_cron_hook');
-	wp_unschedule_event($timestamp, 'moylgrove_recurrence_cron_hook');
+	wp_clear_scheduled_hook('moylgrove_recurrence_cron_hook');
 }
 
 function moylgrove_recurrence_uninstall() {
